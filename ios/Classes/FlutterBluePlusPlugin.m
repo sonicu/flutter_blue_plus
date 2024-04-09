@@ -508,7 +508,9 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                     : CBCharacteristicWriteWithoutResponse);
 
             // check maximum payload
-            int maxLen = [self getMaxPayload:peripheral forType:writeType allowLongWrite:[allowLongWrite boolValue]];
+            // Hardcode limit to 560 bytes, ios will properly chunk the writes to accomodate the MTU
+            // size.  540 is required for firmware updates on firmware that do not have the updated chunk sizes.
+            int maxLen = 560;
             int dataLen = (int) [self convertHexToData:value].length;
             if (dataLen > maxLen) {
                 NSString* t = [writeTypeNumber intValue] == 0 ? @"withResponse" : @"withoutResponse";

@@ -1669,9 +1669,14 @@ public class FlutterBluePlusPlugin implements
 
     private int getMaxPayload(String remoteId, int writeType, boolean allowLongWrite)
     {
-        // 512 this comes from the BLE spec. Characteritics should not 
+        // 512 this comes from the BLE spec. Characteritics should not
         // be longer than 512. Android also enforces this as the maximum in internal code.
-        int maxAttrLen = 512; 
+        int maxAttrLen = 512;
+        if  (Build.VERSION.SDK_INT < 33) { // Android 12 or earlier
+            // Android 12 and earlier allow writes of higher than 512 bytes,  enabling here to allow
+            // older android version to update firmware on devices that require larger writes.
+            maxAttrLen = 560;
+        }
 
         // if no response, we can only write up to MTU-3. 
         // This is the same limitation as iOS, and ensures transfer reliability.
